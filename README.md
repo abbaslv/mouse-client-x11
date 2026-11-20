@@ -80,7 +80,10 @@ Instead of running poll loops for every protocol at once, [`mouse_manager.c`](sr
 #    Uses .tools\w64devkit\bin\gcc.exe if present, or gcc from PATH (MinGW-w64 / w64devkit)
 & ".\src\X11BatteryTrayNative\build.ps1"
 
-# 2. Launch the taskbar battery monitor
+# 2. Or simply double-click Start-BatteryTray.bat (builds automatically if needed and launches)
+.\Start-BatteryTray.bat
+
+# Or launch directly
 & ".\bin\X11BatteryTray.exe"
 
 # 3. Build the clean-room .NET 8 WPF Control Center & run xUnit tests
@@ -135,6 +138,7 @@ dotnet test X11Mouse.sln -c Release
 │   ├── protocol-spec.md        # Reverse-engineered X11 protocol & binary format spec
 │   └── hook-table-151.json     # Extracted 151-entry keycode table
 ├── docs/assets/                # README UI & icon screenshots
+├── Start-BatteryTray.bat       # One-click launcher (auto-builds if needed)
 └── X11Mouse.sln                # Visual Studio / dotnet solution
 ```
 
