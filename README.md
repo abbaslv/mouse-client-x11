@@ -1,8 +1,10 @@
 <div align="center">
 
-# `mouse-client-x11`
+# Universal Wireless Mouse Battery Tray (`mouse-client-x11`)
 
-**Ultra-lightweight (~0.31 MB RAM, 107 KB) native Win32 C taskbar battery monitor for Attack Shark X11 & 2.4G / Bluetooth mice — paired with a clean-room `.NET 8` WPF Control Center and full HID protocol specification.**
+**Ultra-lightweight (~0.31 MB RAM, 107 KB) native Win32 C Windows taskbar battery monitor for wireless 2.4 GHz, USB & Bluetooth mice — supporting Logitech, Razer, Compx/VXE/ATK/VGN/Darmoshark/Attack Shark, Standard HID Battery, and BLE GATT.**
+
+> Also includes an optional clean-room `.NET 8` WPF Control Center and HID protocol spec for Attack Shark X11.
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011-0078D4?style=flat-square&logo=windows)](https://github.com/johnlrt/mouse-client-x11)
 [![Native Tray](https://img.shields.io/badge/Tray%20Binary-Win32%20C%20%C2%B7%20107%20KB-E2211C?style=flat-square&logo=c)](src/X11BatteryTrayNative/main.c)
@@ -105,7 +107,7 @@ dotnet test X11Mouse.sln -c Release
 
 ---
 
-## Clean-Room Control Center & Protocol Spec
+## Bonus: Clean-Room Control Center & Protocol Spec (Attack Shark X11)
 
 - **[X11Mouse.App](src/X11Mouse.App/X11Mouse.App.csproj)** (`.NET 8` WPF) & **[X11Mouse.Core](src/X11Mouse.Core/X11Mouse.Core.csproj)**:
   - Full interactive Attack Shark X11 control suite: vector top-down mouse diagram with bidirectional button highlighting, 8 DPI stages (`220`-entry register table), radial polling selector (`125`–`1000 Hz`), lighting/sleep/debounce settings, 18-slot button remapping (`151`-entry `Hook.dll` VK/scan/HID table), `WH_KEYBOARD_LL` / `WH_MOUSE_LL` macro recorder, legacy `pro.data` / `.profile` / `macro.data` / `.macro` binary codec, and `--probe` / `--smoke-test`.
