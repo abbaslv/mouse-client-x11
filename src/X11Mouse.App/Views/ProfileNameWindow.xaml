@@ -1,0 +1,19 @@
+<Window x:Class="X11Mouse.App.Views.ProfileNameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+        AllowsTransparency="True" Background="Transparent" SizeToContent="WidthAndHeight">
+    <Border Background="{StaticResource CardBgBrush}" BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="1" CornerRadius="8" Width="360" Padding="20">
+        <StackPanel>
+            <TextBlock x:Name="TitleText" Text="Profile Name" Foreground="{StaticResource TextPrimaryBrush}"
+                       FontSize="15" FontWeight="SemiBold" Margin="0,0,0,12" />
+            <TextBox x:Name="NameBox" Style="{StaticResource DarkTextBoxStyle}" Height="34" MaxLength="24"
+                     FontSize="13" Margin="0,0,0,16" KeyDown="NameBox_KeyDown" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancel" Style="{StaticResource DarkButtonStyle}" MinWidth="82" Margin="0,0,10,0" Click="Cancel_Click" />
+                <Button Content="Save" Style="{StaticResource PrimaryAccentButtonStyle}" MinWidth="82" Click="Save_Click" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

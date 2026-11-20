@@ -1,0 +1,511 @@
+<Window x:Class="X11Mouse.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Attack Shark X11 Control Center"
+        Width="1127" Height="760" MinWidth="1040" MinHeight="700"
+        WindowStyle="None" ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        AllowsTransparency="True" Background="Transparent">
+
+    <Border Background="{StaticResource AppBgBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="1" CornerRadius="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="46" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="52" />
+            </Grid.RowDefinitions>
+
+            <!-- TOP BAR -->
+            <Border Grid.Row="0" Background="{StaticResource DeepBgBrush}"
+                    CornerRadius="8,8,0,0" BorderBrush="{StaticResource BorderSubtleBrush}"
+                    BorderThickness="0,0,0,1" MouseLeftButtonDown="TopBar_MouseDown" Padding="16,0,10,0">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Stylized clean-room shark fin crest -->
+                        <Border Width="28" Height="28" Background="{StaticResource AccentBrush}" CornerRadius="6" Margin="0,0,10,0">
+                            <Path Data="M6,21 C10,12 15,7 22,5 C19,12 19,17 22,21 L15,19 Z"
+                                  Fill="#FFFFFF" Stretch="Uniform" Margin="4" />
+                        </Border>
+                        <TextBlock Text="ATTACK SHARK" Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontWeight="Bold" FontSize="15" VerticalAlignment="Center" />
+                        <Border Background="#26E2211C" BorderBrush="{StaticResource AccentBrush}" BorderThickness="1"
+                                CornerRadius="4" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="X11 PRO" Foreground="{StaticResource AccentHoverBrush}" FontWeight="Bold" FontSize="11" />
+                        </Border>
+                        <TextBlock Text="Clean Control Center" Foreground="{StaticResource TextMutedBrush}"
+                                   FontSize="11.5" VerticalAlignment="Center" Margin="10,1,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <!-- Connection badge -->
+                        <Border x:Name="ConnectionBadge" Background="#1D1D1D" BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="1" CornerRadius="12" Padding="10,4" Margin="0,0,10,0" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse x:Name="ConnectionDot" Width="8" Height="8" Fill="#888888" Margin="0,0,6,0" />
+                                <TextBlock x:Name="ConnectionText" Text="Disconnected" Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="11.5" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Battery Telemetry -->
+                        <Border Background="#1D1D1D" BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="1" CornerRadius="12" Padding="10,4" Margin="0,0,12,0" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="28" Height="11" CornerRadius="2" BorderBrush="{StaticResource TextSecondaryBrush}"
+                                        BorderThickness="1" Padding="1" Margin="0,0,6,0" VerticalAlignment="Center">
+                                    <Border x:Name="BatteryFillBar" Background="#34C759" HorizontalAlignment="Left" Width="24" CornerRadius="1" />
+                                </Border>
+                                <TextBlock x:Name="BatteryText" Text="--%" Foreground="{StaticResource TextPrimaryBrush}"
+                                           FontSize="11.5" FontWeight="SemiBold" MinWidth="46" />
+                            </StackPanel>
+                        </Border>
+
+                        <Button Content="⟳" ToolTip="Re-scan USB / 2.4G HID" Style="{StaticResource WindowChromeButtonStyle}" Click="RescanHid_Click" />
+                        <Button Content="?" ToolTip="About &amp; Device Info" Style="{StaticResource WindowChromeButtonStyle}" Click="About_Click" />
+                        <Button Content="─" ToolTip="Minimize" Style="{StaticResource WindowChromeButtonStyle}" Click="Minimize_Click" />
+                        <Button Content="✕" ToolTip="Minimize to Tray (Right click tray to Exit)" Style="{StaticResource WindowChromeButtonStyle}" Click="Close_Click" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- MAIN BODY -->
+            <Grid Grid.Row="1" Margin="14,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="292" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="408" />
+                </Grid.ColumnDefinitions>
+
+                <!-- LEFT COLUMN: Profiles & Button Mapping -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="10" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Profile Manager Card -->
+                    <Border Grid.Row="0" Style="{StaticResource CardPanelStyle}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,8">
+                                <TextBlock Text="CONFIGURATION PROFILE" Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="11" FontWeight="Bold" />
+                                <TextBlock x:Name="DirtyBadge" Text="● Modified" Foreground="{StaticResource AccentHoverBrush}"
+                                           FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Right" Visibility="Collapsed" />
+                            </Grid>
+                            <ComboBox x:Name="ProfileCombo" Style="{StaticResource DarkComboBoxStyle}"
+                                      DisplayMemberPath="Name" SelectionChanged="ProfileCombo_SelectionChanged" />
+                            <UniformGrid Rows="1" Columns="5" Margin="0,8,0,0">
+                                <Button Content="+ New" ToolTip="New Profile" Style="{StaticResource DarkButtonStyle}" Padding="4,5" Margin="0,0,3,0" Click="NewProfile_Click" />
+                                <Button Content="Rename" ToolTip="Rename Profile" Style="{StaticResource DarkButtonStyle}" Padding="4,5" Margin="2,0" Click="RenameProfile_Click" />
+                                <Button Content="Del" ToolTip="Delete Profile" Style="{StaticResource DarkButtonStyle}" Padding="4,5" Margin="2,0" Click="DeleteProfile_Click" />
+                                <Button Content="Import" ToolTip="Import .profile / pro.data / .json" Style="{StaticResource DarkButtonStyle}" Padding="4,5" Margin="2,0" Click="ImportProfile_Click" />
+                                <Button Content="Export" ToolTip="Export .profile / .json" Style="{StaticResource DarkButtonStyle}" Padding="4,5" Margin="3,0,0,0" Click="ExportProfile_Click" />
+                            </UniformGrid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Button Remapping Card -->
+                    <Border Grid.Row="2" Style="{StaticResource CardPanelStyle}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="BUTTON ASSIGNMENT" Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontSize="11" FontWeight="Bold" Margin="0,0,0,8" />
+
+                            <!-- 5 Physical X11 Programmable Buttons -->
+                            <StackPanel Grid.Row="1" x:Name="ButtonRowsPanel" Margin="0,0,0,10" />
+
+                            <Separator Grid.Row="2" Background="{StaticResource BorderSubtleBrush}" Margin="0,2,0,10" />
+
+                            <!-- Action Category + Picker -->
+                            <Grid Grid.Row="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock x:Name="SelectedButtonHeader" Text="Edit Button 1 (Left Click)"
+                                           Foreground="{StaticResource TextPrimaryBrush}" FontWeight="SemiBold"
+                                           FontSize="12.5" Margin="0,0,0,6" />
+
+                                <Grid Grid.Row="1" Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="6" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="4" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ComboBox x:Name="ActionCategoryCombo" Style="{StaticResource DarkComboBoxStyle}"
+                                              Height="28" SelectionChanged="ActionCategoryCombo_SelectionChanged" />
+                                    <Button Grid.Column="2" Content="Shortcut..." Style="{StaticResource DarkButtonStyle}"
+                                            Padding="8,4" Click="AssignShortcut_Click" />
+                                    <Button Grid.Column="4" Content="Macro..." Style="{StaticResource DarkButtonStyle}"
+                                            Padding="8,4" Click="AssignMacro_Click" />
+                                </Grid>
+
+                                <ListBox Grid.Row="2" x:Name="ActionListBox"
+                                         Background="{StaticResource DeepBgBrush}"
+                                         Foreground="{StaticResource TextPrimaryBrush}"
+                                         BorderBrush="{StaticResource BorderSubtleBrush}"
+                                         DisplayMemberPath="Name"
+                                         MouseDoubleClick="ActionListBox_DoubleClick"
+                                         SelectionChanged="ActionListBox_SelectionChanged" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- CENTER COLUMN: Clean-Room Vector Mouse Diagram -->
+                <Border Grid.Column="2" Style="{StaticResource CardPanelStyle}" Padding="10">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,0">
+                            <TextBlock Text="INTERACTIVE MOUSE LAYOUT" Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontSize="11" FontWeight="Bold" />
+                            <Border x:Name="SleepPill" Background="#3B2B00" BorderBrush="#FFB800" BorderThickness="1"
+                                    CornerRadius="10" Padding="8,1" Margin="10,0,0,0" Visibility="Collapsed">
+                                <TextBlock Text="2.4G Sleeping (Move mouse to wake)" Foreground="#FFD24D" FontSize="10.5" FontWeight="SemiBold" />
+                            </Border>
+                        </StackPanel>
+
+                        <!-- Vector Mouse Canvas -->
+                        <Viewbox Grid.Row="1" Margin="6,8">
+                            <Canvas Width="330" Height="455">
+                                <!-- Ambient Glow under mouse reflecting active DPI/Lighting color -->
+                                <Ellipse Width="220" Height="340" Canvas.Left="55" Canvas.Top="62" Opacity="0.22">
+                                    <Ellipse.Fill>
+                                        <RadialGradientBrush>
+                                            <GradientStop x:Name="AmbientGlowColor" Color="#FFE2211C" Offset="0" />
+                                            <GradientStop Color="#00000000" Offset="1" />
+                                        </RadialGradientBrush>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+
+                                <!-- Outer ergonomic Attack Shark X11 Chassis -->
+                                <Path Data="M 165,36 C 210,36 244,64 252,126 C 258,176 250,224 254,280 C 258,342 238,412 165,412 C 92,412 72,342 76,280 C 80,224 72,176 78,126 C 86,64 120,36 165,36 Z"
+                                      Stroke="#444444" StrokeThickness="2">
+                                    <Path.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#2B2B2B" Offset="0" />
+                                            <GradientStop Color="#1B1B1B" Offset="0.6" />
+                                            <GradientStop Color="#121212" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Path.Fill>
+                                </Path>
+
+                                <!-- Left Main Click Button (Hotspot 1 -> Slot 0) -->
+                                <Path x:Name="MouseLeftBtnPath"
+                                      Data="M 162,40 C 122,40 92,66 84,124 L 82,172 L 154,172 L 154,142 C 154,116 154,84 162,40 Z"
+                                      Fill="#242424" Stroke="#3D3D3D" StrokeThickness="1.5" Cursor="Hand"
+                                      MouseLeftButtonDown="MouseHotspot_Click" MouseEnter="MouseHotspot_Enter" MouseLeave="MouseHotspot_Leave" Tag="0" />
+
+                                <!-- Right Main Click Button (Hotspot 2 -> Slot 1) -->
+                                <Path x:Name="MouseRightBtnPath"
+                                      Data="M 168,40 C 208,40 238,66 246,124 L 248,172 L 176,172 L 176,142 C 176,116 176,84 168,40 Z"
+                                      Fill="#242424" Stroke="#3D3D3D" StrokeThickness="1.5" Cursor="Hand"
+                                      MouseLeftButtonDown="MouseHotspot_Click" MouseEnter="MouseHotspot_Enter" MouseLeave="MouseHotspot_Leave" Tag="1" />
+
+                                <!-- Center Wheel Housing -->
+                                <Rectangle Width="24" Height="74" Canvas.Left="153" Canvas.Top="78" RadiusX="8" RadiusY="8" Fill="#121212" Stroke="#353535" StrokeThickness="1" />
+                                <!-- Scroll Wheel (Hotspot 3 -> Slot 2) -->
+                                <Border x:Name="MouseWheelHotspot" Width="18" Height="56" Canvas.Left="156" Canvas.Top="86"
+                                        CornerRadius="6" Background="#333333" BorderBrush="#E2211C" BorderThickness="1.6" Cursor="Hand"
+                                        MouseLeftButtonDown="MouseHotspot_Click" MouseEnter="MouseHotspot_Enter" MouseLeave="MouseHotspot_Leave" Tag="2">
+                                    <StackPanel VerticalAlignment="Center" Margin="2,4">
+                                        <Rectangle Height="2" Fill="#555555" Margin="0,2" />
+                                        <Rectangle Height="2" Fill="#555555" Margin="0,2" />
+                                        <Rectangle Height="2" Fill="#555555" Margin="0,2" />
+                                        <Rectangle Height="2" Fill="#555555" Margin="0,2" />
+                                        <Rectangle Height="2" Fill="#555555" Margin="0,2" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Top Shell Contour Line & Fin Logo -->
+                                <Path Data="M 86,184 Q 165,202 244,184" Stroke="#333333" StrokeThickness="1.5" Fill="Transparent" />
+                                <Path x:Name="LogoLedPath"
+                                      Data="M 165,305 C 171,284 182,272 194,268 C 184,284 184,296 190,309 L 176,303 C 172,306 168,311 165,318 Z"
+                                      Fill="#E2211C" Opacity="0.92" />
+
+                                <!-- Tail Underglow Rim -->
+                                <Path x:Name="TailLedPath"
+                                      Data="M 108,390 Q 165,416 222,390" Stroke="#E2211C" StrokeThickness="3.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Fill="Transparent" />
+
+                                <!-- Side Thumb Button: Forward (Hotspot 4 -> Slot 6) -->
+                                <Path x:Name="MouseForwardBtnPath"
+                                      Data="M 73,166 L 83,166 L 81,222 L 72,218 Z"
+                                      Fill="#2F2F2F" Stroke="#555555" StrokeThickness="1.2" Cursor="Hand"
+                                      MouseLeftButtonDown="MouseHotspot_Click" MouseEnter="MouseHotspot_Enter" MouseLeave="MouseHotspot_Leave" Tag="6" />
+
+                                <!-- Side Thumb Button: Backward (Hotspot 5 -> Slot 7) -->
+                                <Path x:Name="MouseBackwardBtnPath"
+                                      Data="M 72,228 L 81,232 L 82,286 L 73,282 Z"
+                                      Fill="#2F2F2F" Stroke="#555555" StrokeThickness="1.2" Cursor="Hand"
+                                      MouseLeftButtonDown="MouseHotspot_Click" MouseEnter="MouseHotspot_Enter" MouseLeave="MouseHotspot_Leave" Tag="7" />
+
+                                <!-- Leader lines & Numbered Badges 1..5 -->
+                                <Line X1="52" Y1="98" X2="112" Y2="98" Stroke="#5A5A5A" StrokeThickness="1.2" StrokeDashArray="2 2" />
+                                <Border x:Name="Badge0" Width="24" Height="24" CornerRadius="12" Canvas.Left="28" Canvas.Top="86" Background="#2A2A2A" BorderBrush="#E2211C" BorderThickness="1.5" Cursor="Hand" MouseLeftButtonDown="MouseHotspot_Click" Tag="0">
+                                    <TextBlock Text="1" Foreground="White" FontWeight="Bold" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+
+                                <Line X1="216" Y1="98" X2="278" Y2="98" Stroke="#5A5A5A" StrokeThickness="1.2" StrokeDashArray="2 2" />
+                                <Border x:Name="Badge1" Width="24" Height="24" CornerRadius="12" Canvas.Left="278" Canvas.Top="86" Background="#2A2A2A" BorderBrush="#555555" BorderThickness="1.5" Cursor="Hand" MouseLeftButtonDown="MouseHotspot_Click" Tag="1">
+                                    <TextBlock Text="2" Foreground="White" FontWeight="Bold" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+
+                                <Line X1="165" Y1="18" X2="165" Y2="84" Stroke="#5A5A5A" StrokeThickness="1.2" StrokeDashArray="2 2" />
+                                <Border x:Name="Badge2" Width="24" Height="24" CornerRadius="12" Canvas.Left="153" Canvas.Top="4" Background="#2A2A2A" BorderBrush="#555555" BorderThickness="1.5" Cursor="Hand" MouseLeftButtonDown="MouseHotspot_Click" Tag="2">
+                                    <TextBlock Text="3" Foreground="White" FontWeight="Bold" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+
+                                <Line X1="46" Y1="194" X2="74" Y2="194" Stroke="#5A5A5A" StrokeThickness="1.2" StrokeDashArray="2 2" />
+                                <Border x:Name="Badge6" Width="24" Height="24" CornerRadius="12" Canvas.Left="22" Canvas.Top="182" Background="#2A2A2A" BorderBrush="#555555" BorderThickness="1.5" Cursor="Hand" MouseLeftButtonDown="MouseHotspot_Click" Tag="6">
+                                    <TextBlock Text="4" Foreground="White" FontWeight="Bold" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+
+                                <Line X1="46" Y1="256" X2="74" Y2="256" Stroke="#5A5A5A" StrokeThickness="1.2" StrokeDashArray="2 2" />
+                                <Border x:Name="Badge7" Width="24" Height="24" CornerRadius="12" Canvas.Left="22" Canvas.Top="244" Background="#2A2A2A" BorderBrush="#555555" BorderThickness="1.5" Cursor="Hand" MouseLeftButtonDown="MouseHotspot_Click" Tag="7">
+                                    <TextBlock Text="5" Foreground="White" FontWeight="Bold" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </Canvas>
+                        </Viewbox>
+
+                        <!-- Quick Utility Strip -->
+                        <UniformGrid Grid.Row="2" Rows="1" Columns="2" Margin="4,4,4,0">
+                            <Button Content="Windows Mouse Properties" Style="{StaticResource DarkButtonStyle}" Margin="0,0,4,0" Click="WinMouseProps_Click" />
+                            <Button x:Name="LiveProbeSummaryBtn" Content="Show Hardware Status" Style="{StaticResource DarkButtonStyle}" Margin="4,0,0,0" Click="About_Click" />
+                        </UniformGrid>
+                    </Grid>
+                </Border>
+
+                <!-- RIGHT COLUMN: DPI, Polling Rate, Lighting, Sensor & Power -->
+                <ScrollViewer Grid.Column="4" VerticalScrollBarVisibility="Auto" Padding="0,0,4,0">
+                    <StackPanel>
+                        <!-- DPI SETTINGS CARD -->
+                        <Border Style="{StaticResource CardPanelStyle}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="DPI SETTINGS" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Bold" FontSize="12.5" VerticalAlignment="Center" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Content="Reset DPI" Style="{StaticResource DarkButtonStyle}" Padding="8,3" FontSize="11" Click="ResetDpi_Click" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- 2x4 Stage Cards Grid -->
+                                <UniformGrid x:Name="DpiStagesGrid" Rows="4" Columns="2" Margin="0,0,0,10" />
+
+                                <!-- Selected Stage Editor Slider + Direct Input -->
+                                <Border Background="#161616" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="6" Padding="10,8">
+                                    <StackPanel>
+                                        <Grid Margin="0,0,0,6">
+                                            <TextBlock x:Name="SelectedDpiLabel" Text="Stage 2 DPI" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" VerticalAlignment="Center" />
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                <TextBox x:Name="DpiValueBox" Style="{StaticResource DarkTextBoxStyle}" Width="74" Height="26"
+                                                         Text="1600" TextAlignment="Right" FontWeight="SemiBold"
+                                                         KeyDown="DpiValueBox_KeyDown" LostFocus="DpiValueBox_LostFocus" />
+                                                <TextBlock Text="DPI" Foreground="{StaticResource TextMutedBrush}" FontSize="11" VerticalAlignment="Center" Margin="6,0,0,0" />
+                                            </StackPanel>
+                                        </Grid>
+                                        <Slider x:Name="DpiSlider" Minimum="1" Maximum="220" SmallChange="1" LargeChange="5"
+                                                IsSnapToTickEnabled="True" TickFrequency="1"
+                                                Style="{StaticResource DarkSliderStyle}" ValueChanged="DpiSlider_ValueChanged" />
+                                        <Grid Margin="0,2,0,0">
+                                            <TextBlock Text="100" Foreground="{StaticResource TextMutedBrush}" FontSize="10" />
+                                            <TextBlock Text="22000" Foreground="{StaticResource TextMutedBrush}" FontSize="10" HorizontalAlignment="Right" />
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- POLLING RATE CARD -->
+                        <Border Style="{StaticResource CardPanelStyle}" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="96" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Radial Dial Readout -->
+                                <Grid Width="92" Height="92" VerticalAlignment="Center">
+                                    <Ellipse Stroke="#2E2E2E" StrokeThickness="7" Fill="#121212" />
+                                    <Ellipse x:Name="PollingRing" Stroke="{StaticResource AccentBrush}" StrokeThickness="7"
+                                             StrokeDashArray="12 3" RenderTransformOrigin="0.5,0.5" />
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <TextBlock x:Name="PollingDialHz" Text="1000" Foreground="White" FontSize="19" FontWeight="Bold" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Hz" Foreground="{StaticResource TextMutedBrush}" FontSize="10" HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                    <TextBlock Text="POLLING RATE" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Bold" FontSize="12.5" Margin="0,0,0,8" />
+                                    <UniformGrid Rows="2" Columns="2">
+                                        <RadioButton x:Name="Rate125Radio" Content="125Hz (Eco)" Style="{StaticResource DarkRadioStyle}" GroupName="Rate" Margin="0,0,0,6" Checked="PollingRate_Checked" Tag="0" />
+                                        <RadioButton x:Name="Rate250Radio" Content="250Hz (Office)" Style="{StaticResource DarkRadioStyle}" GroupName="Rate" Margin="0,0,0,6" Checked="PollingRate_Checked" Tag="1" />
+                                        <RadioButton x:Name="Rate500Radio" Content="500Hz (Gaming)" Style="{StaticResource DarkRadioStyle}" GroupName="Rate" Checked="PollingRate_Checked" Tag="2" />
+                                        <RadioButton x:Name="Rate1000Radio" Content="1000Hz (Esport)" Style="{StaticResource DarkRadioStyle}" GroupName="Rate" Checked="PollingRate_Checked" Tag="3" />
+                                    </UniformGrid>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- LIGHTING SETTINGS CARD -->
+                        <Border Style="{StaticResource CardPanelStyle}" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="LIGHTING EFFECTS" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Bold" FontSize="12.5" Margin="0,0,0,8" />
+
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="90" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="8" />
+                                        <ColumnDefinition Width="52" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Mode:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                    <ComboBox Grid.Column="1" x:Name="LightModeCombo" Style="{StaticResource DarkComboBoxStyle}"
+                                              Height="28" SelectionChanged="LightModeCombo_SelectionChanged" />
+                                    <Button Grid.Column="3" x:Name="LightColorBtn" ToolTip="Pick Light Color"
+                                            Height="28" Background="#0000FF" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1.2"
+                                            Click="LightColorBtn_Click" Cursor="Hand" />
+                                </Grid>
+
+                                <Grid Margin="0,2,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="90" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="38" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Brightness:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                    <Slider Grid.Column="1" x:Name="BrightnessSlider" Minimum="1" Maximum="8" IsSnapToTickEnabled="True"
+                                            Style="{StaticResource DarkSliderStyle}" ValueChanged="LightSlider_ValueChanged" />
+                                    <TextBlock Grid.Column="2" x:Name="BrightnessValText" Text="8" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid Margin="0,2,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="90" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="38" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Speed:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                    <Slider Grid.Column="1" x:Name="BreathSpeedSlider" Minimum="4" Maximum="8" IsSnapToTickEnabled="True"
+                                            Style="{StaticResource DarkSliderStyle}" ValueChanged="LightSlider_ValueChanged" />
+                                    <TextBlock Grid.Column="2" x:Name="BreathSpeedValText" Text="6" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- PARAMETERS & POWER CARD -->
+                        <Border Style="{StaticResource CardPanelStyle}">
+                            <StackPanel>
+                                <TextBlock Text="SENSOR &amp; POWER PARAMETERS" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="Bold" FontSize="12.5" Margin="0,0,0,8" />
+
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="125" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="46" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Key Debounce:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                    <Slider Grid.Column="1" x:Name="DebounceSlider" Minimum="2" Maximum="25" IsSnapToTickEnabled="True"
+                                            Style="{StaticResource DarkSliderStyle}" ValueChanged="ParamSlider_ValueChanged" />
+                                    <TextBlock Grid.Column="2" x:Name="DebounceValText" Text="4 ms" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="125" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="46" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="LED Off Timer:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                    <Slider Grid.Column="1" x:Name="LightOffTimerSlider" Minimum="1" Maximum="60" IsSnapToTickEnabled="True"
+                                            Style="{StaticResource DarkSliderStyle}" ValueChanged="ParamSlider_ValueChanged" />
+                                    <TextBlock Grid.Column="2" x:Name="LightOffTimerValText" Text="1 m" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="125" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="46" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Deep Sleep:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                    <Slider Grid.Column="1" x:Name="SleepTimerSlider" Minimum="1" Maximum="60" IsSnapToTickEnabled="True"
+                                            Style="{StaticResource DarkSliderStyle}" ValueChanged="ParamSlider_ValueChanged" />
+                                    <TextBlock Grid.Column="2" x:Name="SleepTimerValText" Text="10 m" Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                </Grid>
+
+                                <Grid Margin="0,4,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="125" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Lift Off Distance:" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <RadioButton x:Name="Lod1Radio" Content="1 MM" Style="{StaticResource DarkRadioStyle}" GroupName="LOD" Margin="0,0,18,0" Checked="LodRadio_Checked" Tag="0" />
+                                        <RadioButton x:Name="Lod2Radio" Content="2 MM" Style="{StaticResource DarkRadioStyle}" GroupName="LOD" Checked="LodRadio_Checked" Tag="1" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <UniformGrid Rows="1" Columns="2" Margin="0,4,0,0">
+                                    <CheckBox x:Name="RippleCheck" Content="Ripple Control" Style="{StaticResource DarkCheckBoxStyle}" Checked="SensorCheck_Changed" Unchecked="SensorCheck_Changed" />
+                                    <CheckBox x:Name="AngleSnapCheck" Content="Angle Snap" Style="{StaticResource DarkCheckBoxStyle}" Checked="SensorCheck_Changed" Unchecked="SensorCheck_Changed" />
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- BOTTOM ACTION BAR -->
+            <Border Grid.Row="2" Background="{StaticResource DeepBgBrush}"
+                    CornerRadius="0,0,8,8" BorderBrush="{StaticResource BorderSubtleBrush}"
+                    BorderThickness="0,1,0,0" Padding="16,0">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="Macro Editor" Style="{StaticResource DarkButtonStyle}" Height="32" Margin="0,0,12,0" Click="MacroEditor_Click" />
+                        <CheckBox x:Name="AutoApplyCheck" Content="Auto-Apply" Style="{StaticResource DarkCheckBoxStyle}"
+                                  Margin="0,0,14,0" Checked="AutoApplyCheck_Changed" Unchecked="AutoApplyCheck_Changed" />
+                        <TextBlock x:Name="StatusBanner" Text="Ready" Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontSize="12" VerticalAlignment="Center" MaxWidth="430" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button Content="Restore Defaults" Style="{StaticResource DarkButtonStyle}" Height="32" Margin="0,0,10,0" Click="RestoreDefaults_Click" />
+                        <Button x:Name="ApplyButton" Content="Apply" Style="{StaticResource PrimaryAccentButtonStyle}" MinWidth="128" Height="32" Click="Apply_Click" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- APPLYING OVERLAY (apply_ring equivalent) -->
+            <Border x:Name="ApplyingOverlay" Grid.RowSpan="3" Background="#99000000" CornerRadius="8" Visibility="Collapsed">
+                <Border Background="{StaticResource CardBgBrush}" BorderBrush="{StaticResource AccentBrush}" BorderThickness="1.2"
+                        CornerRadius="10" Padding="26,20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="Syncing to Attack Shark X11..." Foreground="{StaticResource TextPrimaryBrush}" FontSize="14.5" FontWeight="SemiBold" Margin="0,0,0,8" />
+                        <TextBlock Text="Waiting for hardware confirmation..." Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

@@ -1,0 +1,28 @@
+<Window x:Class="X11Mouse.App.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+        AllowsTransparency="True" Background="Transparent" SizeToContent="WidthAndHeight">
+    <Border Background="{StaticResource CardBgBrush}" BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="1" CornerRadius="8" Width="430" Padding="22">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                <Border Background="{StaticResource AccentBrush}" CornerRadius="5" Padding="8,3" VerticalAlignment="Center">
+                    <TextBlock Text="X11" Foreground="White" FontWeight="Bold" FontSize="13" />
+                </Border>
+                <TextBlock Text="Attack Shark X11 Clean Control Center" Foreground="{StaticResource TextPrimaryBrush}"
+                           FontSize="15" FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,10">
+                Clean-room open implementation built with .NET 8 WPF from HID protocol reverse engineering. Uses non-exclusive HID handles (FILE_SHARE_READ | FILE_SHARE_WRITE) and isolated JSON storage in AppData\Roaming\AttackSharkX11Clean.
+            </TextBlock>
+            <Border Background="{StaticResource DeepBgBrush}" BorderBrush="{StaticResource BorderSubtleBrush}"
+                    BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,16">
+                <TextBlock x:Name="DeviceDetailsText" Foreground="{StaticResource TextSecondaryBrush}"
+                           FontFamily="Consolas" FontSize="11.5" TextWrapping="Wrap" />
+            </Border>
+            <Button Content="Close" Style="{StaticResource PrimaryAccentButtonStyle}" MinWidth="90"
+                    HorizontalAlignment="Right" Click="Close_Click" />
+        </StackPanel>
+    </Border>
+</Window>

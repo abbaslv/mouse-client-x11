@@ -1,0 +1,8 @@
+.tools/
+bin/
+obj/
+.vs/
+*.user
+*.suo
+rea-analysis/*.evidence.json
+rea-analysis/*.txt

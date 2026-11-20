@@ -1,0 +1,38 @@
+<Window x:Class="X11Mouse.App.Views.ShortcutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+        AllowsTransparency="True" Background="Transparent" SizeToContent="WidthAndHeight">
+    <Border Background="{StaticResource CardBgBrush}" BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="1" CornerRadius="8" Width="400" Padding="20">
+        <StackPanel>
+            <TextBlock Text="Configure Key Combination" Foreground="{StaticResource TextPrimaryBrush}"
+                       FontSize="15" FontWeight="SemiBold" Margin="0,0,0,12" />
+
+            <TextBlock Text="Modifiers" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,6" />
+            <UniformGrid Rows="1" Columns="4" Margin="0,0,0,14">
+                <CheckBox x:Name="CtrlCheck" Content="Ctrl" Style="{StaticResource DarkCheckBoxStyle}" Checked="ModChanged" Unchecked="ModChanged" />
+                <CheckBox x:Name="ShiftCheck" Content="Shift" Style="{StaticResource DarkCheckBoxStyle}" Checked="ModChanged" Unchecked="ModChanged" />
+                <CheckBox x:Name="AltCheck" Content="Alt" Style="{StaticResource DarkCheckBoxStyle}" Checked="ModChanged" Unchecked="ModChanged" />
+                <CheckBox x:Name="WinCheck" Content="Win" Style="{StaticResource DarkCheckBoxStyle}" Checked="ModChanged" Unchecked="ModChanged" />
+            </UniformGrid>
+
+            <TextBlock Text="Click below and press any primary key:" Foreground="{StaticResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,6" />
+            <Border Background="{StaticResource DeepBgBrush}" BorderBrush="{StaticResource AccentBrush}"
+                    BorderThickness="1.2" CornerRadius="6" Padding="12" Margin="0,0,0,10" Focusable="True"
+                    x:Name="CaptureSurface" PreviewKeyDown="CaptureSurface_PreviewKeyDown" MouseLeftButtonDown="CaptureSurface_MouseDown">
+                <TextBlock x:Name="CapturedKeyText" Text="Press a key..." Foreground="{StaticResource TextPrimaryBrush}"
+                           FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" />
+            </Border>
+
+            <TextBlock x:Name="CombinedPreviewText" Text="Shortcut: None" Foreground="{StaticResource AccentHoverBrush}"
+                       FontSize="12.5" FontWeight="SemiBold" Margin="0,0,0,18" HorizontalAlignment="Center" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Clear" Style="{StaticResource DarkButtonStyle}" MinWidth="74" Margin="0,0,8,0" Click="Clear_Click" />
+                <Button Content="Cancel" Style="{StaticResource DarkButtonStyle}" MinWidth="80" Margin="0,0,8,0" Click="Cancel_Click" />
+                <Button Content="Confirm" Style="{StaticResource PrimaryAccentButtonStyle}" MinWidth="84" Click="Ok_Click" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

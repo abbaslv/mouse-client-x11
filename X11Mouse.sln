@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8611B040-0A26-4F8F-96E2-A8E9549162EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "X11Mouse.Core", "src\X11Mouse.Core\X11Mouse.Core.csproj", "{6CB67D30-4733-42E3-B389-5568B9A34BB3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "X11Mouse.App", "src\X11Mouse.App\X11Mouse.App.csproj", "{8CB31F42-A50B-40BA-A88B-8194492406DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{FF3B6889-96A3-4474-AFF8-D5033DB607E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "X11Mouse.Tests", "tests\X11Mouse.Tests\X11Mouse.Tests.csproj", "{D1E959D1-2319-4E0C-9FB4-72DC672A5984}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "X11Mouse.BatteryTray", "src\X11Mouse.BatteryTray\X11Mouse.BatteryTray.csproj", "{FC2B020F-DCEE-42A7-9E42-2161A99FE67E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6CB67D30-4733-42E3-B389-5568B9A34BB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CB67D30-4733-42E3-B389-5568B9A34BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CB67D30-4733-42E3-B389-5568B9A34BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CB67D30-4733-42E3-B389-5568B9A34BB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CB31F42-A50B-40BA-A88B-8194492406DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CB31F42-A50B-40BA-A88B-8194492406DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CB31F42-A50B-40BA-A88B-8194492406DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CB31F42-A50B-40BA-A88B-8194492406DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1E959D1-2319-4E0C-9FB4-72DC672A5984}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1E959D1-2319-4E0C-9FB4-72DC672A5984}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1E959D1-2319-4E0C-9FB4-72DC672A5984}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1E959D1-2319-4E0C-9FB4-72DC672A5984}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC2B020F-DCEE-42A7-9E42-2161A99FE67E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC2B020F-DCEE-42A7-9E42-2161A99FE67E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC2B020F-DCEE-42A7-9E42-2161A99FE67E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC2B020F-DCEE-42A7-9E42-2161A99FE67E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6CB67D30-4733-42E3-B389-5568B9A34BB3} = {8611B040-0A26-4F8F-96E2-A8E9549162EF}
+		{8CB31F42-A50B-40BA-A88B-8194492406DD} = {8611B040-0A26-4F8F-96E2-A8E9549162EF}
+		{D1E959D1-2319-4E0C-9FB4-72DC672A5984} = {FF3B6889-96A3-4474-AFF8-D5033DB607E7}
+		{FC2B020F-DCEE-42A7-9E42-2161A99FE67E} = {8611B040-0A26-4F8F-96E2-A8E9549162EF}
+	EndGlobalSection
+EndGlobal
